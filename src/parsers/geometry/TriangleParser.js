@@ -156,6 +156,7 @@ export class TriangleParser extends BaseParser {
 			let holes = [];
 
 			const surfaceType = this.getSurfaceTypeIdx( i, semantics, surfaces );
+			const classType = this.getSurfaceClassIdx(i, semantics, surfaces); //geoscity
 			const materialValue = this.getSurfaceMaterials( i, material );
 
 			for ( let j = 0; j < boundaries[ i ].length; j ++ ) {
@@ -180,6 +181,7 @@ export class TriangleParser extends BaseParser {
 											 idIdx,
 											 objType,
 											 surfaceType,
+											 classType, // geoscity
 											 geomIdx,
 											 i,
 											 lodIdx,
@@ -230,6 +232,7 @@ export class TriangleParser extends BaseParser {
 											 	 idIdx,
 												 objType,
 												 surfaceType,
+												 classType,//geoscity
 												 geomIdx,
 												 i,
 												 lodIdx,

@@ -21,6 +21,13 @@ onmessage = function ( e ) {
 
 		}
 
+		//geoscity
+		if (props.classColors) {
+
+			parser.classColors = props.classColors;
+
+	}
+
 		if ( props.lods ) {
 
 			parser.lods = props.lods;
@@ -29,10 +36,13 @@ onmessage = function ( e ) {
 
 	}
 
-	parser.onchunkload = ( v, geometryData, lods, objectColors, surfaceColors ) => {
+
+
+	parser.onchunkload = ( v, geometryData, lods, objectColors, surfaceColors,classColors ) => {
 
 		const vertexArray = new Float32Array( v );
 		const vertexBuffer = vertexArray.buffer;
+		const classColorsToSend = classColors || parser.classColors;
 
 		const msg = {
 			type: "chunkLoaded",
@@ -40,7 +50,8 @@ onmessage = function ( e ) {
 			geometryData,
 			lods,
 			objectColors,
-			surfaceColors
+			surfaceColors,
+			classColors: parser.classColors // geoscity
 		};
 		postMessage( msg, [ vertexBuffer ] );
 

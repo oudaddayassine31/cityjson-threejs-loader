@@ -12,6 +12,7 @@ export class ChunkParser {
 		this.lods = [];
 		this.objectColors = {};
 		this.surfaceColors = {};
+		this.classColors = {}; // geoscity
 
 		this.onchunkload = null;
 		this.onComplete = null;
@@ -19,14 +20,16 @@ export class ChunkParser {
 	}
 
 	parse( data ) {
+		
 
 		let i = 0;
 
 		const geometryParsers = [
-			new TriangleParser( data, Object.keys( data.CityObjects ), this.objectColors ),
-			new LineParser( data, Object.keys( data.CityObjects ), this.objectColors ),
-			new PointParser( data, Object.keys( data.CityObjects ), this.objectColors )
+			new TriangleParser(data, Object.keys(data.CityObjects), this.objectColors, null, this.classColors),
+			new LineParser(data, Object.keys(data.CityObjects), this.objectColors, null, this.classColors),
+			new PointParser(data, Object.keys(data.CityObjects), this.objectColors, null, this.classColors)
 		];
+
 
 		for ( const objectId in data.CityObjects ) {
 
@@ -78,6 +81,7 @@ export class ChunkParser {
 		// shared between the parsers
 		this.objectColors = geometryParsers[ 0 ].objectColors;
 		this.surfaceColors = geometryParsers[ 0 ].surfaceColors;
+		this.classColors = geometryParsers[0].classColors; //gesocity
 
 		if ( this.onComplete ) {
 
@@ -90,15 +94,16 @@ export class ChunkParser {
 	returnObjects( parser, data ) {
 
 		if ( parser.geomData.count() > 0 ) {
+			
 
-			this.onchunkload( parser.geomData.getVertices( data.vertices ),
-							  parser.geomData.toObject(),
-							  parser.lods,
-							  parser.objectColors,
-							  parser.surfaceColors );
-
+			this.onchunkload(
+				parser.geomData.getVertices(data.vertices),
+				parser.geomData.toObject(),
+				parser.lods,
+				parser.objectColors,
+				parser.surfaceColors,
+				parser.classColors
+			);
 		}
-
 	}
-
 }

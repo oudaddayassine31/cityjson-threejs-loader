@@ -90,6 +90,12 @@ export class CityObjectsMaterial extends CityObjectsBaseMaterial {
 
 		this.setValues( parameters );
 
+		// geoscity initializes class-based coloring properties
+		if (parameters && parameters.classColors) {
+			this.classColors = parameters.classColors;
+			this.showClasses = true;
+		}
+
 	}
 
 }

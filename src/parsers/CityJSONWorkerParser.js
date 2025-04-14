@@ -1,5 +1,5 @@
 import { Matrix4, ShaderLib } from 'three';
-import { defaultObjectColors, defaultSemanticsColors } from '../defaults/colors.js';
+import { defaultObjectColors, defaultSemanticsColors, defaultClassColors } from '../defaults/colors.js';
 import { POINTS, LINES, TRIANGLES } from './geometry/GeometryData';
 import 'three/examples/jsm/lines/LineMaterial';
 import { CityObjectsMaterial } from '../materials/CityObjectsMaterial.js';
@@ -25,6 +25,7 @@ export class CityJSONWorkerParser {
 
 		this.objectColors = defaultObjectColors;
 		this.surfaceColors = defaultSemanticsColors;
+		this.classColors = defaultClassColors; // geoscity
 
 		this.lods = [];
 
@@ -36,7 +37,8 @@ export class CityJSONWorkerParser {
 
 		this.meshMaterial = new CityObjectsMaterial( ShaderLib.lambert, {
 			objectColors: this.objectColors,
-			surfaceColors: this.surfaceColors
+			surfaceColors: this.surfaceColors,
+			classColors: this.classColors // geoscity
 		} );
 
 		this.lineMaterial = new CityObjectsLineMaterial( {
@@ -46,14 +48,16 @@ export class CityJSONWorkerParser {
 			vertexColors: false,
 			dashed: false,
 			objectColors: this.objectColors,
-			surfaceColors: this.surfaceColors
+			surfaceColors: this.surfaceColors,
+			classColors: this.classColors // geoscity
 
 		} );
 
 		this.pointsMaterial = new CityObjectsPointsMaterial( {
 			size: 10,
 			objectColors: this.objectColors,
-			surfaceColors: this.surfaceColors
+			surfaceColors: this.surfaceColors,
+			classColors: this.classColors // geoscity
 		} );
 
 	}
@@ -70,6 +74,15 @@ export class CityJSONWorkerParser {
 		this.pointsMaterial.surfaceColors = surfaceColors;
 
 	}
+	//geoscity
+
+	setMaterialsClassColors(classColors) {
+		this.meshMaterial.classColors = classColors;
+		this.lineMaterial.classColors = classColors;
+		this.pointsMaterial.classColors = classColors;
+}
+
+
 
 	parse( data, scene ) {
 
@@ -93,9 +106,17 @@ export class CityJSONWorkerParser {
 
 				context.setMaterialsColors( e.data.objectColors, e.data.surfaceColors );
 
+				if (e.data.classColors) {
+					context.setMaterialsClassColors(e.data.classColors);
+			}
+
 				context.lods = e.data.lods;
 				context.objectColors = e.data.objectColors;
 				context.surfaceColors = e.data.surfaceColors;
+
+				if (e.data.classColors) {
+					context.classColors = e.data.classColors;
+			}
 
 				if ( e.data.geometryData.geometryType == TRIANGLES ) {
 
@@ -145,7 +166,7 @@ export class CityJSONWorkerParser {
 
 		};
 
-		worker.postMessage( [ data, { chunkSize: this.chunkSize, objectColors: this.objectColors, lods: this.lods } ] );
+		worker.postMessage( [ data, { chunkSize: this.chunkSize, objectColors: this.objectColors,classColors: this.classColors, lods: this.lods } ] );//geoscity
 
 		// Parse geometry templates
 		if ( data[ 'geometry-templates' ] ) {

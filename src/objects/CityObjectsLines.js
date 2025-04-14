@@ -31,6 +31,13 @@ export class CityObjectsLines extends LineSegments2 {
 		geom.setAttribute( 'type', new InstancedBufferAttribute( typeArray, 1 ) );
 		const surfaceTypeArray = new Int32Array( removeDuplicates( geometryData.semanticSurfaces ) );
 		geom.setAttribute( 'surfacetype', new InstancedBufferAttribute( surfaceTypeArray, 1 ) );
+
+		//  geoscity Add class information
+		if (geometryData.semanticClasses) {
+			const classTypeArray = new Int32Array(removeDuplicates(geometryData.semanticClasses));
+			geom.setAttribute('classtype', new InstancedBufferAttribute(classTypeArray, 1));
+		}
+
 		const geomIdsArray = new Float32Array( removeDuplicates( geometryData.geometryIds ) );
 		geom.setAttribute( 'geometryid', new InstancedBufferAttribute( geomIdsArray, 1 ) );
 		const lodIdsArray = new Uint8Array( removeDuplicates( geometryData.lodIds ) );
@@ -78,6 +85,11 @@ export class CityObjectsLines extends LineSegments2 {
 
 		intersectionInfo.objectTypeIndex = this.geometry.getAttribute( 'type' ).getX( vertexIdx );
 		intersectionInfo.surfaceTypeIndex = this.geometry.getAttribute( 'surfacetype' ).getX( vertexIdx );
+
+		//  geoscity Add class information
+		if (this.geometry.attributes.classtype) {
+			intersectionInfo.classTypeIndex = this.geometry.getAttribute('classtype').getX(vertexIdx);
+		}
 		intersectionInfo.lodIndex = this.geometry.getAttribute( 'lodid' ).getX( vertexIdx );
 
 		return intersectionInfo;

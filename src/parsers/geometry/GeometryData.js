@@ -13,6 +13,7 @@ export class GeometryData {
 		this.objectIds = [];
 		this.objectTypes = [];
 		this.semanticSurfaces = [];
+		this.semanticClasses = []; // geoscity
 		this.geometryIds = [];
 		this.boundaryIds = [];
 		this.lodIds = [];
@@ -66,12 +67,13 @@ export class GeometryData {
 
 	}
 
-	addVertex( vertexId, objectId, objectType, surfaceType, geometryIdx, boundaryIdx, lodIdx, material, texture ) {
+	addVertex( vertexId, objectId, objectType, surfaceType,classType , geometryIdx, boundaryIdx, lodIdx, material, texture) {
 
 		this.vertexIds.push( vertexId );
 		this.objectIds.push( objectId );
 		this.objectTypes.push( objectType );
 		this.semanticSurfaces.push( surfaceType );
+		this.semanticClasses.push(classType); // geoscity
 		this.geometryIds.push( geometryIdx );
 		this.boundaryIds.push( boundaryIdx );
 		this.lodIds.push( lodIdx );
@@ -171,6 +173,7 @@ export class GeometryData {
 			objectIds: this.objectIds,
 			objectType: this.objectTypes,
 			semanticSurfaces: this.semanticSurfaces,
+			semanticClasses: this.semanticClasses, // geoscity
 			geometryIds: this.geometryIds,
 			boundaryIds: this.boundaryIds,
 			lodIds: this.lodIds,
@@ -210,23 +213,40 @@ export class GeometryData {
 		}
 
 	}
+ //geoscity
+	merge(otherGeomData) {
+    if (otherGeomData.geometryType != this.geometryType) {
+        console.warn("Merging different types of geometry data!");
+    }
 
-	merge( otherGeomData ) {
+    this.vertexIds = this.vertexIds.concat(otherGeomData.vertexIds);
+    this.objectIds = this.objectIds.concat(otherGeomData.objectIds);
+    this.objectTypes = this.objectTypes.concat(otherGeomData.objectTypes);
+    this.semanticSurfaces = this.semanticSurfaces.concat(otherGeomData.semanticSurfaces);
+    this.semanticClasses = this.semanticClasses.concat(otherGeomData.semanticClasses);
+    this.geometryIds = this.geometryIds.concat(otherGeomData.geometryIds);
+    this.boundaryIds = this.boundaryIds.concat(otherGeomData.boundaryIds);
+    this.lodIds = this.lodIds.concat(otherGeomData.lodIds);
 
-		if ( otherGeomData.geometryType != this.geometryType ) {
+    // Handle materials merging
+    for (const theme in otherGeomData.materials) {
+        if (this.materials[theme]) {
+            this.materials[theme] = this.materials[theme].concat(otherGeomData.materials[theme]);
+        } else {
+            this.materials[theme] = [...otherGeomData.materials[theme]];
+        }
+    }
 
-			console.warn( "Merging different types of geometry data!" );
-
-		}
-
-		this.vertexIds.concat( this.otherGeomData.vertexId );
-		this.objectIds.concat( this.otherGeomData.objectId );
-		this.objectTypes.concat( this.otherGeomData.objectType );
-		this.semanticSurfaces.concat( this.otherGeomData.surfaceType );
-		this.geometryIds.concat( this.otherGeomData.geometryIdx );
-		this.boundaryIds.concat( this.otherGeomData.boundaryIdx );
-		this.lodIds.concat( this.otherGeomData.lodIdx );
-
-	}
-
+    // Handle textures merging
+    for (const theme in otherGeomData.textures) {
+        if (this.textures[theme]) {
+            this.textures[theme].index = this.textures[theme].index.concat(otherGeomData.textures[theme].index);
+            this.textures[theme].uvs = this.textures[theme].uvs.concat(otherGeomData.textures[theme].uvs);
+        } else {
+            this.textures[theme] = {
+                index: [...otherGeomData.textures[theme].index],
+                uvs: [...otherGeomData.textures[theme].uvs]
+            };
+        }
+    }
 }

@@ -4,6 +4,7 @@ UniformsLib.cityobject = {
 
 	objectColors: { value: [] },
 	surfaceColors: { value: [] },
+	classColors: { value: [] },  // geoscity
 	attributeColors: { value: [] },
 	cityMaterials: { value: [] },
 	cityTexture: { type: 't' },
@@ -11,7 +12,8 @@ UniformsLib.cityobject = {
 	highlightedObjId: { value: - 1 },
 	highlightedGeomId: { value: - 1 },
 	highlightedBoundId: { value: - 1 },
-	highlightColor: { value: new Color( 0xFFC107 ).convertSRGBToLinear() }
+	highlightColor: { value: new Color( 0xFFC107 ).convertSRGBToLinear() },
+	useClassColoring: { value: false }  // geoscity , used to toggle for calss-based coloring 
 
 };
 
@@ -32,6 +34,12 @@ ShaderChunk.cityobjectinclude_vertex = `
             attribute int surfacetype;
 
         #endif
+
+				#ifdef SHOW_CLASSES
+						uniform vec3 classColors[ CLASS_COUNT ];
+						uniform bool useClassColoring;
+						attribute int classtype;
+				#endif
 
 		#ifdef COLOR_ATTRIBUTE
 
@@ -89,7 +97,14 @@ ShaderChunk.cityobjectinclude_vertex = `
 		#endif
     `;
 
+//geoscity update with the showclass
 ShaderChunk.cityobjectdiffuse_vertex = `
+				#ifdef SHOW_CLASSES
+						if (useClassColoring && classtype > -1) {
+								diffuse_ = classColors[classtype];
+						} else
+				#endif
+
         #ifdef SHOW_SEMANTICS
 
             diffuse_ = surfacetype > -1 ? surfaceColors[surfacetype] : objectColors[type];
@@ -159,9 +174,12 @@ export class CityObjectsBaseMaterial extends ShaderMaterial {
 
 		this.objectColors = {};
 		this.surfaceColors = {};
+		this.classColors = {};  // geoscity adds classcolors
 		this.attributeColors = {};
 		this.materials = [];
 		this.showSemantics = true;
+		this.showClasses = false;  //  geoscity Add showClasses property
+		this.useClassColoring = false;  //  geoscity Add useClassColoring property
 
 		this.textures = [];
 
@@ -171,6 +189,7 @@ export class CityObjectsBaseMaterial extends ShaderMaterial {
 
 		this.defines.OBJCOLOR_COUNT = 0;
 		this.defines.SEMANTIC_COUNT = 0;
+		this.defines.CLASS_COUNT = 0;  // geoscity adds class count define
 		this.defines.ATTRIBUTE_COUNT = 0;
 		this.defines.MATERIAL_COUNT = 0;
 
@@ -190,6 +209,44 @@ export class CityObjectsBaseMaterial extends ShaderMaterial {
 		return data;
 
 	}
+	//geoscity add classColors getter/setter
+
+	set classColors(colors) {
+		this.classColorsLookup = colors;
+		this.uniforms.classColors.value = this.createColorsArray(colors);
+		this.defines.CLASS_COUNT = Object.keys(colors).length;
+		this.needsUpdate = true;
+	}
+
+	get classColors() {
+			return this.classColorsLookup;
+	}
+    // geoscity adds showClasses getter/setter
+	get showClasses() {
+		return Boolean('SHOW_CLASSES' in this.defines);
+	}
+
+	set showClasses(value) {
+			if (Boolean(value) !== Boolean('SHOW_CLASSES' in this.defines)) {
+					this.needsUpdate = true;
+			}
+
+			if (value === true) {
+					this.defines.SHOW_CLASSES = '';
+			} else {
+					delete this.defines.SHOW_CLASSES;
+			}
+	}
+
+	// geoscity adds useClassColoring getter/setter
+	get useClassColoring() {
+		return this.uniforms.useClassColoring.value;
+	}
+
+	set useClassColoring(value) {
+			this.uniforms.useClassColoring.value = value;
+	}
+
 
 	set attributeColors( colors ) {
 

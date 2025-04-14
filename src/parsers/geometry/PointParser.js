@@ -44,10 +44,13 @@ export class PointParser extends BaseParser {
 				const semantics = geometry.semantics ? geometry.semantics.values : [];
 				const surfaceType = this.getSurfaceTypeIdx( i, semantics, semanticSurfaces );
 
+				const classType = this.getSurfaceClassIdx(i, semantics, semanticSurfaces); //geoscity
+
 				this.geomData.addVertex( points[ i ],
 					idIdx,
 					objType,
 					surfaceType,
+					classType, // geoscity
 					geomIdx,
 					i,
 					lodIdx );

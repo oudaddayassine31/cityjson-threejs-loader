@@ -31,3 +31,14 @@ export const defaultSemanticsColors = {
 	"Window": 0x0059ff,
 	"Door": 0x640000
 };
+
+// gesocity
+export const defaultClassColors = {
+	"class1": 0x0000FF, // Blue
+	"class2": 0x00FF00, // Green
+	"class3": 0xFF0000, // Red
+	"class4": 0xFFFF00, // Yellow
+	"class5": 0xFF00FF, // Magenta
+	"class6": 0xFFFFFF, // white
+	"class7": 0xFFFFFF  // White
+};

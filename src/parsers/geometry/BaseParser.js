@@ -1,4 +1,4 @@
-import { defaultSemanticsColors } from '../../defaults/colors.js';
+import { defaultSemanticsColors, defaultClassColors } from '../../defaults/colors.js';
 
 export class BaseParser {
 
@@ -9,6 +9,7 @@ export class BaseParser {
 		this.objectIds = objectIds;
 		this.objectColors = objectColors;
 		this.surfaceColors = defaultSemanticsColors;
+		this.classColors = defaultClassColors || {}; // geoscity
 		this.lods = [];
 
 	}
@@ -63,6 +64,32 @@ export class BaseParser {
 		return surfaceType;
 
 	}
+	//geoscity
+	getSurfaceClassIdx(idx, semantics, surfaces) {
+		
+    let classValue = -1;
+    if (semantics.length > 0) {
+        const surface = surfaces[semantics[idx]];
+        console.log(`Surface at index ${idx}:`, surface);
+        
+        if (surface && surface.class !== undefined) {
+            const classKey = `class${surface.class}`;
+            console.log(`Found class value: ${surface.class}, using key: ${classKey}`);
+            
+            classValue = Object.keys(this.classColors).indexOf(classKey);
+            console.log(`Class value index in classColors: ${classValue}`);
+            
+            if (classValue < 0) {
+                classValue = Object.keys(this.classColors).length;
+                this.classColors[classKey] = Math.floor(Math.random() * 0xffffff);
+                console.log(`Added new class color for ${classKey}: ${this.classColors[classKey].toString(16)}`);
+            }
+        } else {
+            console.log(`No class attribute found for surface at index ${idx}`);
+        }
+    }
+    return classValue;
+}
 
 	getSurfaceMaterials( idx, material ) {
 

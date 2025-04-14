@@ -45,6 +45,7 @@ export class LineParser extends BaseParser {
 
 					const semantics = geometry.semantics ? geometry.semantics.values : [];
 					const surfaceType = this.getSurfaceTypeIdx( i, semantics, semanticSurfaces );
+					const classType = this.getSurfaceClassIdx(i, semantics, semanticSurfaces);//geoscity
 
 					const linestring = linestrings[ i ];
 
@@ -55,6 +56,7 @@ export class LineParser extends BaseParser {
 							idIdx,
 							objType,
 							surfaceType,
+							classType, //geoscity
 							geomIdx,
 							i,
 							lodIdx );
@@ -63,6 +65,7 @@ export class LineParser extends BaseParser {
 							idIdx,
 							objType,
 							surfaceType,
+							classType, //geoscity
 							geomIdx,
 							i,
 							lodIdx );
